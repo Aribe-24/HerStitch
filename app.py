@@ -1,5 +1,4 @@
 import base64
-import json
 import os
 import smtplib
 import sqlite3
@@ -10,8 +9,37 @@ from urllib.parse import urlencode
 
 from flask import Flask, g, render_template, request
 
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - optional dependency
+    load_dotenv = None
+
+if load_dotenv is not None:
+    load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "herstitch-secret"
+
+
+def is_real_value(value):
+    if not value:
+        return False
+    normalized = value.strip().lower()
+    if not normalized:
+        return False
+    placeholders = {
+        "your-email@gmail.com",
+        "your-email-password-or-app-password",
+        "your-twilio-account-sid",
+        "your-twilio-auth-token",
+        "whatsapp:+14155238886",
+        "your-email@gmail.com",
+    }
+    if normalized in placeholders:
+        return False
+    if normalized.startswith("your-"):
+        return False
+    return True
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "herstitch.db")
 
@@ -85,6 +113,8 @@ def send_notification(message_data):
 
     email_sent = False
     whatsapp_sent = False
+    email_error = None
+    whatsapp_error = None
 
     smtp_server = os.getenv("MAIL_SERVER")
     smtp_port = int(os.getenv("MAIL_PORT", "587"))
@@ -93,7 +123,7 @@ def send_notification(message_data):
     recipient = os.getenv("MAIL_RECIPIENT", "herstitch24@gmail.com")
     sender = os.getenv("MAIL_DEFAULT_SENDER", smtp_username or "no-reply@herstitch.local")
 
-    if smtp_server and smtp_username and smtp_password:
+    if is_real_value(smtp_server) and is_real_value(smtp_username) and is_real_value(smtp_password):
         try:
             message = EmailMessage()
             message["Subject"] = subject
@@ -106,6 +136,7 @@ def send_notification(message_data):
                 smtp.send_message(message)
             email_sent = True
         except Exception as exc:
+            email_error = str(exc)
             app.logger.exception("Email notification failed: %s", exc)
     else:
         app.logger.info("Email notification skipped because SMTP settings are not configured")
@@ -115,7 +146,7 @@ def send_notification(message_data):
     twilio_from = os.getenv("TWILIO_WHATSAPP_FROM")
     twilio_to = os.getenv("TWILIO_WHATSAPP_TO")
 
-    if twilio_sid and twilio_token and twilio_from and twilio_to:
+    if is_real_value(twilio_sid) and is_real_value(twilio_token) and is_real_value(twilio_from) and is_real_value(twilio_to):
         try:
             payload = urlencode(
                 {
@@ -124,7 +155,7 @@ def send_notification(message_data):
                     "Body": f"New HerStitch enquiry from {name}: {details[:160]}",
                 }
             ).encode("utf-8")
-            request = urllib.request.Request(
+            request_obj = urllib.request.Request(
                 f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json",
                 data=payload,
                 headers={
@@ -132,15 +163,21 @@ def send_notification(message_data):
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
             )
-            with urllib.request.urlopen(request) as response:
+            with urllib.request.urlopen(request_obj) as response:
                 response.read()
             whatsapp_sent = True
         except Exception as exc:
+            whatsapp_error = str(exc)
             app.logger.exception("WhatsApp notification failed: %s", exc)
     else:
         app.logger.info("WhatsApp notification skipped because Twilio settings are not configured")
 
-    return {"email_sent": email_sent, "whatsapp_sent": whatsapp_sent}
+    return {
+        "email_sent": email_sent,
+        "whatsapp_sent": whatsapp_sent,
+        "email_error": email_error,
+        "whatsapp_error": whatsapp_error,
+    }
 
 
 def validate_custom_order(form_data):
@@ -217,7 +254,7 @@ def custom_orders():
                 (form_data.get("name", ""), form_data.get("email", ""), form_data.get("event_date", ""), form_data.get("details", "")),
             )
             db.commit()
-            send_notification(
+            notification_result = send_notification(
                 {
                     "name": form_data.get("name", ""),
                     "email": form_data.get("email", ""),
@@ -226,7 +263,12 @@ def custom_orders():
                     ),
                 }
             )
-            return render_template("custom_orders.html", submitted=True, active_page="custom-orders")
+            return render_template(
+                "custom_orders.html",
+                submitted=True,
+                active_page="custom-orders",
+                notification_result=notification_result,
+            )
 
     return render_template(
         "custom_orders.html",
@@ -246,7 +288,7 @@ def contact():
     if request.method == "POST":
         errors = validate_contact_message(form_data)
         if not errors:
-            send_notification(
+            notification_result = send_notification(
                 {
                     "name": form_data.get("name", ""),
                     "email": form_data.get("email", ""),

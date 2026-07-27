@@ -6,6 +6,10 @@
     <div class="highlight"><i class="fa-solid fa-circle-check"></i> Request received</div>
     <h2>Thank you</h2>
     <p>Thank you for sharing your ideas with us. We will be in touch soon about your custom order.</p>
+    {% if notification_result %}
+    <p><strong>Delivery status:</strong> Email: {% if notification_result.email_sent %}sent{% else %}not sent{% endif
+      %}; WhatsApp: {% if notification_result.whatsapp_sent %}sent{% else %}not sent{% endif %}</p>
+    {% endif %}
   </div>
 </section>
 {% else %}
@@ -25,7 +29,8 @@
       <input name="name" value="{{ form_data.get('name', '') }}" placeholder="Your name">
       <input name="email" type="email" value="{{ form_data.get('email', '') }}" placeholder="Your email">
       <input name="event_date" type="date" value="{{ form_data.get('event_date', '') }}">
-      <textarea name="details" rows="5" placeholder="Tell us about your order">{{ form_data.get('details', '') }}</textarea>
+      <textarea name="details" rows="5"
+        placeholder="Tell us about your order">{{ form_data.get('details', '') }}</textarea>
       <button class="btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Send request</button>
     </form>
   </div>
