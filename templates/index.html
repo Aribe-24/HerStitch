@@ -1,25 +1,49 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <section class="hero">
   <div class="hero-card">
-    <div class="highlight"><i class="fa-solid fa-heart"></i> Handmade with intention</div>
+    <div class="highlight">
+      <i class="fa-solid fa-heart"></i> Handmade with intention
+    </div>
     <h1>Elegant crochet florals for life’s most meaningful moments.</h1>
-    <p>HerStitch creates romantic, handcrafted blooms for weddings, events, gifting, and home styling. Every piece is designed to feel personal, timeless, and beautifully made.</p>
-    <a class="btn" href="/shop"><i class="fa-solid fa-arrow-right"></i> Browse the collection</a>
-    <a class="btn secondary" href="/custom-orders"><i class="fa-solid fa-palette"></i> Request a custom design</a>
+    <p>
+      HerStitch creates romantic, handcrafted blooms for weddings, events,
+      gifting, and home styling. Every piece is designed to feel personal,
+      timeless, and beautifully made.
+    </p>
+    <a class="btn" href="/shop"
+      ><i class="fa-solid fa-arrow-right"></i> Browse the collection</a
+    >
+    <a class="btn secondary" href="/custom-orders"
+      ><i class="fa-solid fa-palette"></i> Request a custom design</a
+    >
   </div>
   <div class="hero-card">
-    <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=900&q=80" alt="Crochet flowers" style="width:100%; border-radius: 20px; height: 320px; object-fit: cover;">
+    <img
+      src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=900&q=80"
+      alt="Crochet flowers"
+      style="width: 100%; border-radius: 20px; height: 320px; object-fit: cover"
+    />
   </div>
 </section>
 
 <section class="section">
   <div class="panel">
-    <div class="highlight"><i class="fa-solid fa-star"></i> Why clients love HerStitch</div>
+    <div class="highlight">
+      <i class="fa-solid fa-star"></i> Why clients love HerStitch
+    </div>
     <div class="feature-list">
-      <div><i class="fa-solid fa-check-circle" style="color: var(--sage);"></i> Premium handmade finishes with thoughtful detail</div>
-      <div><i class="fa-solid fa-check-circle" style="color: var(--sage);"></i> Bespoke pieces for weddings, events, and gifts</div>
-      <div><i class="fa-solid fa-check-circle" style="color: var(--sage);"></i> Friendly service from design to delivery</div>
+      <div>
+        <i class="fa-solid fa-check-circle" style="color: var(--sage)"></i>
+        Premium handmade finishes with thoughtful detail
+      </div>
+      <div>
+        <i class="fa-solid fa-check-circle" style="color: var(--sage)"></i>
+        Bespoke pieces for weddings, events, and gifts
+      </div>
+      <div>
+        <i class="fa-solid fa-check-circle" style="color: var(--sage)"></i>
+        Friendly service from design to delivery
+      </div>
     </div>
   </div>
 </section>
@@ -29,10 +53,9 @@
   <div class="cards">
     {% for product in products %}
     <div class="card">
-      <img src="{{ product['image'] }}" alt="{{ product['name'] }}">
+      <img src="{{ product['image'] }}" alt="{{ product['name'] }}" />
       <h3>{{ product['name'] }}</h3>
       <p>{{ product['description'] }}</p>
-      <strong>${{ '%.2f' % product['price'] }}</strong>
     </div>
     {% endfor %}
   </div>
