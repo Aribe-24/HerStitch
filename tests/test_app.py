@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -52,6 +53,21 @@ class HerStitchAppTests(unittest.TestCase):
         self.assertIn(b"Please enter at least 2 characters", response.data)
         self.assertIn(b"Please enter a future date", response.data)
         self.assertIn(b"Please provide at least 10 characters", response.data)
+
+    @patch("app.send_notification")
+    def test_custom_order_sends_notifications(self, mock_send_notification):
+        response = self.client.post(
+            "/custom-orders",
+            data={
+                "name": "Test Client",
+                "email": "test@example.com",
+                "event_date": "2026-09-01",
+                "details": "Need 10 stems for a bridal shower.",
+            },
+            follow_redirects=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        mock_send_notification.assert_called_once()
 
 
 if __name__ == "__main__":

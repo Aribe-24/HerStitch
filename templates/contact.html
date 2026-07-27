@@ -9,7 +9,23 @@
         rel="noopener noreferrer">+256 746505708</a></p>
     <p><i class="fa-brands fa-whatsapp"></i> <a href="https://wa.me/256768030029" target="_blank"
         rel="noopener noreferrer">+256 768030029</a></p>
-    <p><i class="fa-brands fa-instagram"></i> @herstitchstudio</p>
+    <p><i class="fa-solid fa-envelope"></i> <a href="mailto:herstitch24@gmail.com">herstitch24@gmail.com</a></p>
+    <p><i class="fa-brands fa-tiktok"></i> HerStitch</p>
+    <p><i class="fa-brands fa-instagram"></i> herstitch23</p>
+    {% if submitted %}
+    <div class="panel" style="background: #f3fff8; border: 1px solid #b9e6c9; margin-top: 1rem;">
+      <p style="margin: 0; color: #2f6f4f;"><i class="fa-solid fa-circle-check"></i> Thanks for your message. We will
+        contact you shortly.</p>
+    </div>
+    {% else %}
+    <form method="post" action="/contact" style="margin-top: 1rem;">
+      <input name="name" value="{{ form_data.get('name', '') }}" placeholder="Your name">
+      <input name="email" type="email" value="{{ form_data.get('email', '') }}" placeholder="Your email">
+      <textarea name="message" rows="5"
+        placeholder="Write your message here">{{ form_data.get('message', '') }}</textarea>
+      <button class="btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Send message</button>
+    </form>
+    {% endif %}
     <p><i class="fa-solid fa-store"></i> Markets: Available for local events and pop-up markets.</p>
   </div>
 </section>
