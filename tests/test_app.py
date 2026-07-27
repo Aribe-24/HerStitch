@@ -36,6 +36,23 @@ class HerStitchAppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Thank you", response.data)
 
+    def test_custom_order_form_rejects_invalid_data(self):
+        response = self.client.post(
+            "/custom-orders",
+            data={
+                "name": "A",
+                "email": "not-an-email",
+                "event_date": "2025-01-01",
+                "details": "brief",
+            },
+            follow_redirects=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Please enter a valid email address", response.data)
+        self.assertIn(b"Please enter at least 2 characters", response.data)
+        self.assertIn(b"Please enter a future date", response.data)
+        self.assertIn(b"Please provide at least 10 characters", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

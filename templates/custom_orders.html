@@ -14,11 +14,18 @@
     <div class="highlight"><i class="fa-solid fa-palette"></i> Bespoke creations</div>
     <h2>Custom Orders</h2>
     <p>Tell us about your event, color palette, and budget. We will create a custom piece just for you.</p>
+    {% if errors %}
+    <div class="panel" style="background: #fff6f6; border: 1px solid #f1b8b8; margin-bottom: 1rem;">
+      {% for error in errors.values() %}
+      <p style="margin: 0.3rem 0; color: #9b2c2c;"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
     <form method="post">
-      <input name="name" placeholder="Your name" required>
-      <input name="email" type="email" placeholder="Your email" required>
-      <input name="event_date" type="date" required>
-      <textarea name="details" rows="5" placeholder="Tell us about your order" required></textarea>
+      <input name="name" value="{{ form_data.get('name', '') }}" placeholder="Your name">
+      <input name="email" type="email" value="{{ form_data.get('email', '') }}" placeholder="Your email">
+      <input name="event_date" type="date" value="{{ form_data.get('event_date', '') }}">
+      <textarea name="details" rows="5" placeholder="Tell us about your order">{{ form_data.get('details', '') }}</textarea>
       <button class="btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Send request</button>
     </form>
   </div>
