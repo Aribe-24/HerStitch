@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+  <h2>Shop</h2>
+  <div class="cards">
+    {% for product in products %}
+    <div class="card">
+      <img src="{{ product['image'] }}" alt="{{ product['name'] }}">
+      <h3>{{ product['name'] }}</h3>
+      <p>{{ product['description'] }}</p>
+      <p><strong>${{ '%.2f' % product['price'] }}</strong></p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

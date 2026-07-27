@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if submitted %}
+<section class="section">
+  <div class="panel">
+    <div class="highlight"><i class="fa-solid fa-circle-check"></i> Request received</div>
+    <h2>Thank you</h2>
+    <p>Thank you for sharing your ideas with us. We will be in touch soon about your custom order.</p>
+  </div>
+</section>
+{% else %}
+<section class="section">
+  <div class="panel">
+    <div class="highlight"><i class="fa-solid fa-palette"></i> Bespoke creations</div>
+    <h2>Custom Orders</h2>
+    <p>Tell us about your event, color palette, and budget. We will create a custom piece just for you.</p>
+    <form method="post">
+      <input name="name" placeholder="Your name" required>
+      <input name="email" type="email" placeholder="Your email" required>
+      <input name="event_date" type="date" required>
+      <textarea name="details" rows="5" placeholder="Tell us about your order" required></textarea>
+      <button class="btn" type="submit"><i class="fa-solid fa-paper-plane"></i> Send request</button>
+    </form>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
